@@ -4,3 +4,6 @@ venv/
 *.db
 .dat*
 .DS_Store
+
+# opencode configuration
+.opencode/

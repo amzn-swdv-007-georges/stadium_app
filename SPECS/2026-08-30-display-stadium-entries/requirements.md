@@ -23,6 +23,22 @@ existing records. It does not add or edit records.
 
 - The seeded `stadium.db` contains 22 entry rows tied to 18 people.
 
+## Running the App
+
+Start the backend from the command line:
+
+```
+cd stadium_app
+python3 backend/app.py
+```
+
+The server boots on port `5000` with `host='0.0.0.0'`. The dashboard is
+available in the Codio preview browser at:
+
+```
+https://grandherman-nelsonvitamin-5000.codio.io/
+```
+
 ## Requirements (Functional)
 
 1. **Backend endpoint** — `GET /api/entries` returns all stadium entry records

@@ -4,6 +4,22 @@ Date: 2026-08-30
 
 How we know this feature is complete and can be merged.
 
+## Starting the Server (CLI)
+
+Launch the app from the command line before checking endpoints:
+
+```
+cd stadium_app
+python3 backend/app.py
+```
+
+The server boots on port `5000` with `host='0.0.0.0'`. The dashboard is
+available in the Codio preview browser at:
+
+```
+https://grandherman-nelsonvitamin-5000.codio.io/
+```
+
 ## Automated Checks
 
 Run each command and confirm the expected result.
@@ -41,7 +57,9 @@ Run each command and confirm the expected result.
 
 ## Manual / Browser Checks (via Codio preview)
 
-1. Open the dashboard. The entry table renders rows populated from the backend.
+1. Open the dashboard at
+   `https://grandherman-nelsonvitamin-5000.codio.io/`. The entry table renders
+   rows populated from the backend.
 2. The status badge shows **Backend Connected**.
 3. The entry count equals the number of rows in the table.
 4. Change the gate filter to a specific gate → the table narrows to that gate.

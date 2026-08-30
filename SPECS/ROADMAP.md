@@ -35,6 +35,9 @@ We are transitioning the backend from in-memory stub data to a persistent SQLite
 - [ ] **Validation & Testing**
   - [ ] Execute automated validation test suite
   - [ ] Verify persistence across application restarts
+  - [ ] Run the app from the CLI: `cd stadium_app && python3 backend/app.py`
+  - [ ] Confirm dashboard loads at
+        `https://grandherman-nelsonvitamin-5000.codio.io/`
 
 ### Phase 3: Frontend Integration & Real-time Gate Feeds `[UPCOMING]`
 - [ ] Connect Frontend dashboard to active SQLite backend endpoints

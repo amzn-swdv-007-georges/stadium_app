@@ -75,6 +75,24 @@ Tracks individual badge scans and security gate event logs.
 
 ---
 
+## Running the Application (CLI)
+
+Launch the backend from the command line:
+
+```bash
+cd stadium_app
+python3 backend/app.py
+```
+
+- Flask runs on port `5000` with `host='0.0.0.0'` (required so the Codio
+  preview panel can reach it).
+- The dashboard is available in the Codio preview browser at
+  **https://grandherman-nelsonvitamin-5000.codio.io/**.
+- The preview hostname is derived from `CODIO_BOX_DOMAIN`
+  (`grandherman-nelsonvitamin.codio.io`) plus the server port `5000`.
+
+---
+
 ## Security & Implementation Rules
 
 1. **SQL Injection Prevention**:

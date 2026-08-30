@@ -40,12 +40,24 @@ stadium_app/
 
 ## Run
 
+Start the backend with:
+
 ```bash
+cd stadium_app
 python3 backend/app.py
 ```
 
-Then open the dashboard URL in the Codio preview browser. Flask runs on
-port `5000` with `host='0.0.0.0'`.
+Flask runs on port `5000` with `host='0.0.0.0'`.
+
+## Dashboard
+
+Open the running dashboard in the Codio preview browser:
+
+**https://grandherman-nelsonvitamin-5000.codio.io/**
+
+> The hostname is derived from `CODIO_BOX_DOMAIN`
+> (`grandherman-nelsonvitamin.codio.io`) plus the server port `5000`. If your
+> box domain changes, rebuild the URL as `https://<hostname>-5000.codio.io/`.
 
 ## Verify persistence
 
@@ -65,3 +77,15 @@ git add .
 git commit -m "Build stadium security dashboard"
 git push
 ```
+
+## Run the CLI
+
+After syncing, launch the app from the command line:
+
+```bash
+cd stadium_app
+python3 backend/app.py
+```
+
+Then open **https://grandherman-nelsonvitamin-5000.codio.io/** in the Codio
+preview browser to view the dashboard.

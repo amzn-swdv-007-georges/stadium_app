@@ -39,7 +39,9 @@ both an implementation and a verification pass.
 
 ## Task Group 4 — Validation / Checks
 
-- [ ] Start server (`./run.sh`) and confirm it boots on port 5000.
+- [ ] Start server from the command line:
+      `cd stadium_app && python3 backend/app.py` (may also use `./run.sh`)
+      and confirm it boots on port 5000.
 - [ ] `curl localhost:5000/api/health` → `{"status":"ok"}`.
 - [ ] `curl localhost:5000/api/entries` → 22 JSON objects.
 - [ ] `curl 'localhost:5000/api/entries?gate=C'` → only gate-C entries.

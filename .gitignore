@@ -1,9 +1,0 @@
-__pycache__/
-*.py[cod]
-venv/
-*.db
-.dat*
-.DS_Store
-
-# opencode configuration
-.opencode/

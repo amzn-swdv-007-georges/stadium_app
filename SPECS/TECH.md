@@ -31,13 +31,23 @@ Data flows unidirectionally through four distinct architectural layers:
 ### 1. Frontend Layer
 * **Role**: User interaction, rendering security dashboards, entry log visualization, and gate alerts.
 * **Communication**: Communicates exclusively with the Backend via RESTful HTTP endpoints (`/api/...`).
+* **Framework**: HTML + CSS + [HTMX](https://htmx.org/). No hand-written
+  JavaScript — all interactions are HTMX attributes in `frontend/index.html`.
+  HTMX fetches HTML fragments (not JSON) from `GET /api/entries/table`.
 * **Constraints**: 
   * Zero knowledge of database schemas, SQL syntax, or file paths.
-  * Formats outgoing payloads as JSON; parses incoming JSON responses.
+  * Renders HTML fragments returned by the backend; does not parse JSON for
+    the dashboard table.
 
 ### 2. Backend Layer (API & Service Routing)
 * **Role**: HTTP request handling, route dispatching, request payload validation, HTTP status code formatting, and error handling.
 * **Communication**: Receives HTTP requests from Frontend; invokes Python methods in the Data Layer.
+* **Endpoints**:
+  * `GET /api/entries` (and `?gate=`) — JSON, for programmatic clients.
+  * `GET /api/entries/table` (and `?gate=`) — HTML fragment for the HTMX
+    dashboard: the table rows plus out-of-band updates for the status badge
+    and entry counter.
+  * `GET /api/health` — `{"status": "ok"}`.
 * **Constraints**:
   * Does not construct or execute raw SQL strings directly within route handlers.
   * Delegates all persistence operations to `backend/data_layer.py`.

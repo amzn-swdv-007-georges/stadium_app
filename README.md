@@ -10,7 +10,7 @@ Frontend → Flask API → Data Layer → SQLite
 
 ## Stack
 
-- **Frontend:** HTML, CSS, JavaScript (no frameworks)
+- **Frontend:** HTML, CSS, [HTMX](https://htmx.org/) (no hand-written JavaScript)
 - **Backend:** Flask + REST API
 - **Database:** SQLite
 - All SQL lives in `backend/data_layer.py` — never in routes or the frontend.
@@ -20,8 +20,7 @@ Frontend → Flask API → Data Layer → SQLite
 ```text
 stadium_app/
 ├── frontend/
-│   ├── index.html
-│   └── app.js
+│   └── index.html          ← HTMX-driven, no app.js
 ├── backend/
 │   ├── app.py
 │   └── data_layer.py
@@ -37,6 +36,14 @@ stadium_app/
 
 - **View entries** — `GET /api/entries`
 - **Filter by gate** — `GET /api/entries?gate=A` (gates A–D)
+- **HTMX dashboard** — `GET /api/entries/table` returns the table as an HTML
+  fragment that HTMX swaps into the page (no hand-written JavaScript).
+
+  All interactions are HTMX attributes in `frontend/index.html`:
+  - page load populates the table automatically
+  - gate-filter change re-fetches with `?gate=X`
+  - the Refresh button re-fetches with the current gate
+  - connection status and entry count update via out-of-band swaps
 
 ## Run
 

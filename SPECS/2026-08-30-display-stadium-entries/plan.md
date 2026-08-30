@@ -24,18 +24,22 @@ both an implementation and a verification pass.
 - [ ] `GET /api/health`: returns `{"status": "ok"}`. (implemented)
 - [ ] Check: no `import sqlite3` in app.py; no SQL in route handlers.
 
-## Task Group 3 — Frontend (`frontend/index.html`, `frontend/app.js`)
+## Task Group 3 — Frontend (HTMX, `frontend/index.html`)
 
-- [ ] `index.html`: table with headers `# | Person ID | Gate | Hour | Bag`,
+The dashboard uses HTMX instead of hand-written JavaScript. No `app.js`.
+
+- [x] `index.html`: table with headers `# | Person ID | Gate | Hour | Bag`,
       gate-filter dropdown (All/A/B/C/D), Refresh button, entry count, status
-      badge, empty-state. (implemented)
-- [ ] `app.js`:
-  - `fetchEntries(gate)`: `GET /api/entries[?gate=X]`, parse JSON, call
-    `renderTable`, update count + status badge; on error mark backend offline.
-  - `renderTable(entries)`: clear rows; if empty show empty-state; else render
-    one `<tr>` per entry with gate badge.
-  - Event wiring: gate-filter change, Refresh click, initial load on
-    `DOMContentLoaded`.
+      badge. HTMX is loaded from the CDN. (implemented)
+- [x] HTMX attributes drive everything:
+  - controls panel carries `hx-get="/api/entries/table"` with
+    `hx-trigger="change from:#gate-filter, click from:#refresh-btn, load"`,
+    `hx-include=#gate-filter`, `hx-target="#entries-body"`,
+    `hx-swap="innerHTML"`.
+  - gate-filter is named `gate` so HTMX sends `?gate=X`.
+  - entry count and status badge update via `hx-swap-oob="true"` fragments.
+  - `backend/app.py` gains `GET /api/entries/table` returning the table rows
+    as an HTML fragment plus out-of-band status/count. (implemented)
 
 ## Task Group 4 — Validation / Checks
 
@@ -45,6 +49,10 @@ both an implementation and a verification pass.
 - [ ] `curl localhost:5000/api/health` → `{"status":"ok"}`.
 - [ ] `curl localhost:5000/api/entries` → 22 JSON objects.
 - [ ] `curl 'localhost:5000/api/entries?gate=C'` → only gate-C entries.
+- [ ] `curl 'localhost:5000/api/entries/table'` → HTML fragment of table rows
+      + an `<span id="count-value" hx-swap-oob>` + a
+      `<div id="status-badge" class="connected" hx-swap-oob>`.
+- [ ] `curl 'localhost:5000/api/entries/table?gate=C'` → only gate-C rows.
 - [ ] Cross-check returned rows against `sqlite3 stadium.db` count.
 - [ ] Confirm persistence: restart server, records still present.
 - [ ] Syntax check backend (`python3 -m py_compile backend/*.py`).

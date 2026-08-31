@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Security Command Dashboard</title>
+
+  <!--
+    STUB FILE — OpenCode will rewrite the logic inside this file.
+    The structure and styles are here so you can see the layout immediately.
+    Read the comments to understand what each section does before OpenCode fills it in.
+  -->
+
+  <style>
+    :root {
+      --bg:          #0f172a;
+      --panel:       #1e293b;
+      --border:      #334155;
+      --text:        #e2e8f0;
+      --muted:       #94a3b8;
+      --green:       #34d399;
+      --amber:       #fbbf24;
+      --red:         #f87171;
+      --blue:        #60a5fa;
+      --accent:      #3b82f6;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 24px;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    header h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Status badge — shows "Backend Connected" or "Waiting for backend..." */
+    #status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    #status-badge.connected {
+      color: var(--green);
+      border-color: var(--green);
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    /* ── Controls bar ── */
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .controls label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /*
+      GATE FILTER — this <select> sends the chosen gate to fetchEntries().
+      OpenCode will wire the onchange event in app.js.
+    */
+    #gate-filter {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 7px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    #gate-filter:focus { border-color: var(--blue); }
+
+    /*
+      REFRESH BUTTON — calls fetchEntries() with the current filter value.
+      OpenCode will attach the onclick handler in app.js.
+    */
+    #refresh-btn {
+      padding: 7px 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #refresh-btn:hover { background: #2563eb; }
+
+    /* ── Entry count ── */
+    #entry-count {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    #entry-count span {
+      font-weight: 700;
+      color: var(--blue);
+    }
+
+    /* ── Table ── */
+    .table-wrap {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(0,0,0,0.2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(51,65,85,0.5);
+      color: var(--text);
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover td { background: rgba(255,255,255,0.03); }
+
+    /* Gate colour badges */
+    .gate-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .gate-A { background: rgba(96,165,250,0.15);  color: #60a5fa; }
+    .gate-B { background: rgba(167,139,250,0.15); color: #a78bfa; }
+    .gate-C { background: rgba(52,211,153,0.15);  color: #34d399; }
+    .gate-D { background: rgba(251,191,36,0.15);  color: #fbbf24; }
+
+    /* ── Empty / loading state ── */
+    #empty-state {
+      padding: 48px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header>
+    <h1>🏟 Security Command Dashboard</h1>
+    <!--
+      Status badge — OpenCode will update this via app.js
+      once the backend responds successfully.
+    -->
+    <div id="status-badge">Waiting for backend…</div>
+  </header>
+
+  <!-- ── CONTROLS ── -->
+  <div class="controls">
+    <label for="gate-filter">Filter by gate</label>
+
+    <!--
+      GATE FILTER DROPDOWN
+      Options: All Gates, Gate A, Gate B, Gate C, Gate D
+      OpenCode will attach an onchange listener in app.js that calls
+      fetchEntries(this.value) whenever the selection changes.
+    -->
+    <select id="gate-filter">
+      <option value="">All Gates</option>
+      <option value="A">Gate A</option>
+      <option value="B">Gate B</option>
+      <option value="C">Gate C</option>
+      <option value="D">Gate D</option>
+    </select>
+
+    <!--
+      REFRESH BUTTON
+      OpenCode will attach an onclick listener in app.js.
+    -->
+    <button id="refresh-btn">↻ Refresh</button>
+
+    <!-- Entry counter — OpenCode will update this after each fetch -->
+    <div id="entry-count">Entries: <span id="count-value">—</span></div>
+  </div>
+
+  <!-- ── ENTRY TABLE ── -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <!--
+            Column headers match the stadium_entries table schema:
+            id | person_id | gate | hour | bag
+            OpenCode will populate <tbody> dynamically via app.js.
+          -->
+          <th>#</th>
+          <th>Person ID</th>
+          <th>Gate</th>
+          <th>Hour</th>
+          <th>Bag</th>
+        </tr>
+      </thead>
+
+      <!--
+        TBODY — starts empty.
+        OpenCode's renderTable() function in app.js will inject <tr> rows here
+        after fetchEntries() receives data from the backend.
+      -->
+      <tbody id="entries-body">
+      </tbody>
+    </table>
+
+    <!--
+      EMPTY STATE — shown when no data has loaded yet.
+      OpenCode will hide this once the first fetch succeeds.
+    -->
+    <div id="empty-state">
+      Start the backend, then click Refresh to load entry records.
+    </div>
+  </div>
+
+  <!--
+    app.js contains all the fetch logic.
+    OpenCode will implement fetchEntries() and renderTable() there.
+  -->
+  <script src="app.js"></script>
+
+</body>
+</html>

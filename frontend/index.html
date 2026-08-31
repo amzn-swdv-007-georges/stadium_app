@@ -5,12 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Security Command Dashboard</title>
 
-  <!--
-    STUB FILE — OpenCode will rewrite the logic inside this file.
-    The structure and styles are here so you can see the layout immediately.
-    Read the comments to understand what each section does before OpenCode fills it in.
-  -->
-
   <style>
     :root {
       --bg:          #0f172a;
@@ -87,10 +81,7 @@
       letter-spacing: 0.5px;
     }
 
-    /*
-      GATE FILTER — this <select> sends the chosen gate to fetchEntries().
-      OpenCode will wire the onchange event in app.js.
-    */
+    /* GATE FILTER — sends the chosen gate to fetchEntries() on change. */
     #gate-filter {
       background: var(--panel);
       border: 1px solid var(--border);
@@ -104,10 +95,7 @@
 
     #gate-filter:focus { border-color: var(--blue); }
 
-    /*
-      REFRESH BUTTON — calls fetchEntries() with the current filter value.
-      OpenCode will attach the onclick handler in app.js.
-    */
+    /* REFRESH BUTTON — calls fetchEntries() with the current filter value. */
     #refresh-btn {
       padding: 7px 16px;
       background: var(--accent);
@@ -198,10 +186,7 @@
   <!-- ── HEADER ── -->
   <header>
     <h1>🏟 Security Command Dashboard</h1>
-    <!--
-      Status badge — OpenCode will update this via app.js
-      once the backend responds successfully.
-    -->
+    <!-- Status badge — updated by app.js once the backend responds. -->
     <div id="status-badge">Waiting for backend…</div>
   </header>
 
@@ -212,8 +197,7 @@
     <!--
       GATE FILTER DROPDOWN
       Options: All Gates, Gate A, Gate B, Gate C, Gate D
-      OpenCode will attach an onchange listener in app.js that calls
-      fetchEntries(this.value) whenever the selection changes.
+      app.js attaches an onchange listener that calls fetchEntries(value).
     -->
     <select id="gate-filter">
       <option value="">All Gates</option>
@@ -223,13 +207,10 @@
       <option value="D">Gate D</option>
     </select>
 
-    <!--
-      REFRESH BUTTON
-      OpenCode will attach an onclick listener in app.js.
-    -->
+    <!-- REFRESH BUTTON — app.js attaches an onclick listener. -->
     <button id="refresh-btn">↻ Refresh</button>
 
-    <!-- Entry counter — OpenCode will update this after each fetch -->
+    <!-- Entry counter — updated by app.js after each fetch -->
     <div id="entry-count">Entries: <span id="count-value">—</span></div>
   </div>
 
@@ -241,7 +222,7 @@
           <!--
             Column headers match the stadium_entries table schema:
             id | person_id | gate | hour | bag
-            OpenCode will populate <tbody> dynamically via app.js.
+            app.js populates <tbody> dynamically.
           -->
           <th>#</th>
           <th>Person ID</th>
@@ -253,8 +234,8 @@
 
       <!--
         TBODY — starts empty.
-        OpenCode's renderTable() function in app.js will inject <tr> rows here
-        after fetchEntries() receives data from the backend.
+        app.js renderTable() injects <tr> rows here after fetchEntries()
+        receives data from the backend.
       -->
       <tbody id="entries-body">
       </tbody>
@@ -262,7 +243,7 @@
 
     <!--
       EMPTY STATE — shown when no data has loaded yet.
-      OpenCode will hide this once the first fetch succeeds.
+      app.js hides this once the first fetch succeeds.
     -->
     <div id="empty-state">
       Start the backend, then click Refresh to load entry records.
@@ -270,8 +251,8 @@
   </div>
 
   <!--
-    app.js contains all the fetch logic.
-    OpenCode will implement fetchEntries() and renderTable() there.
+    app.js contains all the fetch logic, including fetchEntries()
+    and renderTable().
   -->
   <script src="app.js"></script>
 

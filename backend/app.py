@@ -1,7 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # backend/app.py — Flask API server
-# STUB FILE — OpenCode will implement the route bodies below.
-# Read the comments to understand what each route must do.
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # ARCHITECTURAL BOUNDARY RULE (from SPECS/TECH.md):
@@ -9,25 +7,55 @@
 #   It must NEVER import sqlite3 or write SQL queries directly.
 #   All database access goes through data_layer.py.
 #
-from flask import Flask, jsonify, request
+# Logging is kept out of business logic by using a small decorator that
+# records each request at the route boundary — no log statements mixed into
+# the route handlers themselves.
+#
+import logging
+import os
+from functools import wraps
 
-# Import the data layer — the ONLY place SQL is allowed.
-# Notice: no "import sqlite3" here. That boundary is enforced.
+from flask import Flask, jsonify, request, send_from_directory
+
 import data_layer
 
-import os
-from flask import send_from_directory
+# Configure a module-level logger so request logging is centralized here,
+# not scattered inside route handlers.
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def log_request(fn):
+    """Decorator: logs the method and path before delegating to the route.
+
+    Keeps logging concerns separate from HTTP/business logic.
+    """
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        logger.info(
+            "REQUEST %s %s",
+            request.method,
+            request.full_path.rstrip('?'),
+        )
+        return fn(*args, **kwargs)
+    return wrapper
+
 
 app = Flask(__name__)
-FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'frontend')
+FRONTEND_DIR = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    'frontend',
+)
 
 
 @app.route('/')
+@log_request
 def index():
     return send_from_directory(FRONTEND_DIR, 'index.html')
 
 
 @app.route('/<path:filename>')
+@log_request
 def static_files(filename):
     return send_from_directory(FRONTEND_DIR, filename)
 
@@ -39,16 +67,11 @@ def static_files(filename):
 # Optional query parameter:
 #   ?gate=A  — filters results to a single gate (A, B, C, or D)
 #
-# What it must do:
-#   1. Read the optional ?gate= query parameter from the request
-#   2. If gate is provided → call data_layer.get_entries_by_gate(gate)
-#      If gate is absent   → call data_layer.get_all_entries()
-#   3. Return the result as JSON with HTTP 200
-#   4. On error → return {"error": "..."} with HTTP 500
-#
-# OpenCode will implement this route body.
+# This route only reads the request and delegates to the data layer.
+# It must never build SQL or import sqlite3.
 #
 @app.route('/api/entries', methods=['GET'])
+@log_request
 def get_entries():
     try:
         gate = request.args.get('gate')
@@ -57,8 +80,9 @@ def get_entries():
         else:
             entries = data_layer.get_all_entries()
         return jsonify(entries)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as exc:
+        logger.exception("Failed to fetch entries")
+        return jsonify({"error": str(exc)}), 500
 
 
 # ─── GET /api/health ─────────────────────────────────────────────────────────
@@ -67,6 +91,7 @@ def get_entries():
 # Returns: {"status": "ok"}
 #
 @app.route('/api/health', methods=['GET'])
+@log_request
 def health():
     return jsonify({"status": "ok"})
 
@@ -76,10 +101,10 @@ def health():
 #
 # host="0.0.0.0"  — required for Codio's preview panel to reach the server.
 #                   Never use "127.0.0.1" here or the preview will not load.
-# port=3000       — matches the Codio preview URL (https://HOSTNAME-3000.codio.io)
+# port=5000       — matches the project run command and Codio preview.
 # debug=True      — auto-reloads when you save a file during development.
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':
     print("Stadium Security Backend starting…")
-    print("Dashboard: https://nervefuel-crimsonfish-5000.codio.io/")
+    print("Dashboard: http://0.0.0.0:5000/")
     app.run(host='0.0.0.0', port=5000, debug=True, use_reloader=False)

@@ -1,7 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # backend/data_layer.py — Database access layer
-# STUB FILE — OpenCode will complete get_entries_by_gate() below.
-# The two functions above it are already implemented as reference.
 # ─────────────────────────────────────────────────────────────────────────────
 #
 # ARCHITECTURAL BOUNDARY RULE (from SPECS/TECH.md):
@@ -62,8 +60,6 @@ def get_all_entries():
 # This prevents SQL injection attacks.
 #
 # Returns: list of plain Python dicts — same shape as get_all_entries().
-#
-# OpenCode will implement this function body in Step 6.
 #
 def get_entries_by_gate(gate):
     conn = get_db_connection()
